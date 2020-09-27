@@ -1,0 +1,128 @@
+This is a scratch pad to see if I can extract information available on Edgar DataSet 
+
+import urllib3
+from bs4 import BeautifulSoup
+import re
+import re
+import time 
+import os
+import numpy as np
+
+url = 'https://www.sec.gov/Archives/edgar/full-index/'
+
+def getPageContent(url):
+    http = urllib3.PoolManager()
+    r = http.request('GET', url)
+    return BeautifulSoup(r.data, 'html.parser')
+
+def getLinks(soup):
+    links=[]
+    for link in soup.find_all('a'):
+        
+        if re.match(r"^\d+.*$",str(link.get('href'))):
+            links.append(link.get('href'))
+    return links
+    
+    
+for year in getLinks(getPageContent(url)):
+    yearurl=url+year
+    time.sleep(np.random.randint(0, 5))
+   
+    http = urllib3.PoolManager()
+    r = http.request('GET', yearurl)
+    soup=BeautifulSoup(r.data, 'html.parser')
+    
+    for quarter in soup.find_all('a'):
+        if re.match(r"^Q+.*$",str(quarter.get('href'))):
+            
+            
+            quarterUrl=quarter.get('href')
+            soup= getPageContent(yearurl+quarterUrl)
+            for link in soup.find_all('a'):
+                if re.match(r"^company.idx",str(link.get('href'))):
+                    comRecords= yearurl+quarterUrl+link.get('href')
+                    
+                    #print(year[:-1], quarter['href'][:-1],comRecords)
+                    
+                    import urllib3
+                    http = urllib3.PoolManager()
+                    rr = http.request('GET', comRecords, preload_content=False)
+                    
+                    path=os.getcwd()+'/secData/'
+                    fullfileName='{}.idx'.format(year[:-1]+quarter['href'][:-1])
+                    
+                    with open(path+fullfileName, 'wb') as out:
+                        while True:
+                            data = rr.read()
+                            if not data:
+                                break
+                            out.write(data)
+
+                    rr.release_conn()
+    r.release_conn()lll
+                    
+    time.sleep(np.random.randint(0, 7))
+ ## Create a list of unique CIK 
+path=os.getcwd()+'/secData/'
+import pandas as pd
+import re
+import time 
+import os
+import numpy as np
+import time
+
+start= time.time()
+
+compDict=[]
+for i in os.listdir(path):
+    with open(path+i, 'rb+') as f:
+        jj =f.read().splitlines()
+        firstItem=[]
+        for ll in jj:
+            if len(ll) >=150:
+                secondSubItem=[]
+                for kk in str(ll).split(' '): 
+                    if kk.isnumeric() and len(kk) >= 5:
+                        secondSubItem.append(kk)
+                firstItem.append(secondSubItem)
+                del secondSubItem
+                
+    compDict.append(set([subitem for item in firstItem for subitem in item]))
+    del firstItem
+finalCIK= set([subitem for item in compDict for subitem in item] )
+del compDict
+
+end = time.time()
+print(end-start)
+
+
+
+#https://www.sec.gov/Archives/edgar/data/51143/000156218020006000
+#https://www.sec.gov/Archives/edgar/data/1189512/000112760220022651
+#https://www.sec.gov/Archives/edgar/data/51143/000156218020004514/0001562180-20-004514-index.html
+#https://www.sec.gov/Archives/edgar/data/51143/000156218020004514/primarydocument.xml
+
+import xml.etree.ElementTree as ET
+for item in compDict:
+    for subitem in item:
+        
+        url = 'https://www.sec.gov/Archives/edgar/data/'+str(subitem)
+        http = urllib3.PoolManager()
+        r = http.request('GET', url)
+        soup=BeautifulSoup(r.data, 'html.parser')
+        for link in soup.find_all('a'):
+            if re.match(r"^/Archives+.*$",str(link.get('href'))):
+                
+                #detailDataURL='https://www.sec.gov/'+link['href']
+                detailDataURL='https://www.sec.gov/'+link['href']+'/edgar.xml'
+                
+                r = http.request('GET', detailDataURL)
+                soup=BeautifulSoup(r.data, "html.parser")
+                #print(soup.b, soup.text[:4])
+                #mydivs = soup.findAll("div", {"class": "stylelistrow"})
+                #print(soup.find("div", {"id": "folder1"}))
+                for link in soup.find_all("div", {"id": "folder1"}):
+                    print(link)
+#                 titles = soup.find_all('title')
+#                 for title in titles:
+#                     print(title.get_text())
