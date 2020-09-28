@@ -1,0 +1,31 @@
+Extract from txt files example
+
+url= 'https://www.sec.gov/Archives/edgar/data/1225974/000118143106057632/0001181431-06-057632.txt'
+
+import urllib3
+http = urllib3.PoolManager()
+rr = http.request('GET', url, preload_content=False)
+
+soup=BeautifulSoup(rr, 'html.parser')
+
+
+
+for k, v in enumerate(str(soup.findChild()).split()):
+    if v =='<xml>': 
+        idx1=k
+    elif  v == '</xml>': 
+        idx2 = k
+        
+        print(idx1, idx2)
+        
+        r= ''.join(str(soup.findChild()).split()[idx1:idx2+1])
+        import xml.etree.ElementTree as ET
+        import lxml.etree as ET
+        
+        soup = BeautifulSoup(r, "xml")
+#         print(soup.prettify())
+        
+        print(soup.find_all('periodofreport'))
+        print(soup.find_all('issuername'))
+        print(soup.find_all('securitytitle'))
+        print(soup.find_all('issuertradingsymbol'))
