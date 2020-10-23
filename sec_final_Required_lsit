@@ -13,6 +13,24 @@ sec_partial['0'] # see the list below.
 
 # following loop will extract only the required text files
 
+from numpy import random
+from time import sleep
+
+for secp in sec_partial['0']:
+    url= 'https://www.sec.gov/'+secp
+    http = urllib3.PoolManager()
+    r = http.request('GET', url)
+    
+    sleeptime = random.uniform(2, 20)
+    sleep(sleeptime)
+    print("sleeping for:", sleeptime, "seconds")
+    soup=BeautifulSoup(r.data, 'html.parser')
+    for i in soup.find_all('a'):
+        if len(i['href'].split('/')) >=6:
+            if 'txt' in i['href'].split('.'):
+                print(i['href'])
+    break
+
 for secp in sec_partial['0']:
     url= 'https://www.sec.gov/'+secp
     http = urllib3.PoolManager()
