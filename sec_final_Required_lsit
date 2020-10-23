@@ -1,5 +1,42 @@
 sec final settings
 
+import urllib3
+from bs4 import BeautifulSoup
+import re
+import re
+import time 
+import os
+import numpy as np
+
+
+sec_partial['0'] # see the list below. 
+
+# following loop will extract only the required text files
+
+for secp in sec_partial['0']:
+    url= 'https://www.sec.gov/'+secp
+    http = urllib3.PoolManager()
+    r = http.request('GET', url)
+    time.sleep(3)
+    soup=BeautifulSoup(r.data, 'html.parser')
+    for i in soup.find_all('a'):
+        if len(i['href'].split('/')) >=6:
+            if 'txt' in i['href'].split('.'):
+                print(i['href'])
+               
+ # example of text file genrated
+/Archives/edgar/data/1249759/000120919107072257/0001209191-07-072257.txt
+/Archives/edgar/data/1249759/000124979204000068/0001249792-04-000068.txt
+/Archives/edgar/data/1249759/000124979204000044/0001249792-04-000044.txt
+/Archives/edgar/data/1249759/000124979204000005/0001249792-04-000005.txt
+/Archives/edgar/data/95366/000119312510005817/0001193125-10-005817.txt
+/Archives/edgar/data/95366/000095012309073974/0000950123-09-073974.txt
+/Archives/edgar/data/95366/000095012309073903/0000950123-09-073903.txt
+/Archives/edgar/data/95366/999999999509003583/9999999995-09-003583.txt
+/Archives/edgar/data/95366/999999999509003584/9999999995-09-003584.txt
+               
+               
+sec_partial= 
 ['/Archives/edgar/data/1249759/000120919107072257',
  '/Archives/edgar/data/1249759/000124979204000068',
  '/Archives/edgar/data/1249759/000124979204000044',
