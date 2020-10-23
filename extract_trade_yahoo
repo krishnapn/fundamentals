@@ -1,0 +1,9 @@
+## Extracts historical values from yahoo, this is a hack, api is recommended.
+
+import urllib3
+http = urllib3.PoolManager()
+url='https://query1.finance.yahoo.com/v7/finance/download/{}?period1=946684800&period2=1603324800&interval=1d&events=history&inclueAdjustedClose=true'.format('AAPL')
+rr = http.request('GET', url, preload_content=False)
+
+soup=BeautifulSoup(rr, 'html.parser')
+soup
