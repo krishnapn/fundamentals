@@ -11,20 +11,11 @@ import numpy as np
 
 d={}
 for cik in list(finalCIK):
+    url= 'https://www.sec.gov/Archives/edgar/data/'+cik
+    http = urllib3.PoolManager()
+    r = http.request('GET', url)
+    soup=BeautifulSoup(r.data, 'html.parser')
     for i in soup.find_all('a'):
-    ## see below how the 'soup' is generated 
         if len(str(i['href']).split('/')) ==6:
-            d[cik]= i['href']
-            
- ## example how to generate soup for the above loop
- 
-url = 'https://www.sec.gov/Archives/edgar/data/1249759/'
-time.sleep(np.random.randint(0, 5))
-   
-http = urllib3.PoolManager()
-r = http.request('GET', url)
-soup=BeautifulSoup(r.data, 'html.parser')
-#print(soup.text)
-#//*[@id="main-content"]/table/tbody/tr[2]/td[1]/a
-
-soup.find_all(('main-content'))
+            if i['href'].split('/')[-2] == cik:
+                d.setdefault(cik,[]).append(i['href'])
