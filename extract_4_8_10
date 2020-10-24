@@ -1,0 +1,48 @@
+# FORM 4
+#url= 'https://www.sec.gov/Archives/edgar/data/66740/000110465920105049/0001104659-20-105049.txt'
+
+#FORM 8-K
+url= 'https://www.sec.gov/Archives/edgar/data/1180006/000002891714000188/0000028917-14-000188.txt'
+
+## FORM 10-K
+url= 'https://www.sec.gov/Archives/edgar/data/4962/000000496220000098/0000004962-20-000098.txt'
+
+
+import xmltodict
+import json
+import urllib3
+from numpy import random
+from time import sleep
+
+start= time.time()
+http = urllib3.PoolManager()
+rr = http.request('GET', url, preload_content=False)
+
+soup=BeautifulSoup(rr, 'html.parser')
+
+
+
+for k, v in enumerate(str(soup.findChild()).split()):
+    if v =='<xml>': 
+        idx1=k
+    elif  v == '</xml>': 
+        idx2 = k
+        
+        print(idx1, idx2)
+        
+        r= ''.join(str(soup.findChild()).split()[idx1:idx2+1])
+        import xml.etree.ElementTree as ET
+        import lxml.etree as ET
+        
+        soup = BeautifulSoup(r, "xml")
+        sleeptime = random.uniform(2, 10)
+        sleep(sleeptime)
+        
+        ## convert the extracted text to json
+        xml_dict = json.dumps(xmltodict.parse((soup.prettify())))
+
+        
+for k, v in dict(json.loads(xml_dict)).items():
+    for key, value in v.items():
+        for key, value in value.items():
+            print(key)
