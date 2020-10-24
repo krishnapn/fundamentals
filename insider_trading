@@ -1,0 +1,31 @@
+GET INSIDER TRADER
+
+https://www.sec.gov/cgi-bin/own-disp?action=getissuer&CIK=0000001800
+
+### TO DO Neeed to write something to link up the issuer etc/ 
+
+company_cik= {'10X+GENOMICS': 'CIK=0001770787',
+ '1LIFE+HEALTHCARE': 'CIK=0001404123',
+ '1ST+CONSTITUTION+BANCORP': 'CIK=0001141807',
+ '1ST+SOURCE+CORP': 'CIK=0001227807',
+ '3D+SYSTEMS+CORP': 'CIK=0000910638'}
+
+
+import urllib3
+http = urllib3.PoolManager()
+from numpy import random
+from time import sleep
+
+for k, v in company_cik.items():
+    url='https://www.sec.gov/cgi-bin/own-disp?action=getissuer&{}'.format(v)
+    rr = http.request('GET', url, preload_content=False)
+    print(url)
+    
+    sleeptime = random.uniform(2, 10)
+    sleep(sleeptime)
+    print("sleeping for:", sleeptime, "seconds for ")
+    soup=BeautifulSoup(rr, 'html.parser')
+    for i in soup.find_all('a'):
+        regex=re.compile('CIK=\d+')
+        print(i['href'], i.text)
+    break
