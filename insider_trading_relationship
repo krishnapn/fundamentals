@@ -2,7 +2,7 @@ GET INSIDER TRADER
 
 https://www.sec.gov/cgi-bin/own-disp?action=getissuer&CIK=0000001800
 
-### TO DO Neeed to write something to link up the issuer etc/ 
+###### Following code parses the cik and finds the owners based on the supplied CIK 
 
 company_cik= {'10X+GENOMICS': 'CIK=0001770787',
  '1LIFE+HEALTHCARE': 'CIK=0001404123',
@@ -11,24 +11,33 @@ company_cik= {'10X+GENOMICS': 'CIK=0001770787',
  '3D+SYSTEMS+CORP': 'CIK=0000910638'}
 
 
-import urllib3
-http = urllib3.PoolManager()
-from numpy import random
-from time import sleep
-
-for k, v in company_cik.items():
-    url='https://www.sec.gov/cgi-bin/own-disp?action=getissuer&{}'.format(v)
+owner=defaultdict(list)
+start=time.time()
+for key, cik in company_cik.items():
+    '''This following code extracts the insider traders listed by the SEC website'''
+    url='https://www.sec.gov/cgi-bin/own-disp?action=getissuer&{}'.format(cik)
     rr = http.request('GET', url, preload_content=False)
-    print(url)
-    
     sleeptime = random.uniform(2, 10)
     sleep(sleeptime)
     print("sleeping for:", sleeptime, "seconds for ")
     soup=BeautifulSoup(rr, 'html.parser')
     for i in soup.find_all('a'):
-        regex=re.compile('CIK=\d+')
-        print(i['href'], i.text)
-    break
+        regex=re.compile('=getowner&CIK=\d+')
+        a=[]
+        if a != regex.findall(i['href']):
+            stringToParse= i['href']
+            regex=re.compile('\d+')
+            cik=''.join(regex.findall(cik))
+           
+            owner[cik].append(regex.findall(stringToParse))
+end=time.time()
+print(end-end)
+
+## generates the list of owner to the supplied cik, relationship is created created 
+insdr_Tra_rlns= [{k:[subitem for item in v for subitem in item]} for k, v in owner.items()]
+
+
+######
 {'10X+GENOMICS': 'CIK=0001770787',
  '1LIFE+HEALTHCARE': 'CIK=0001404123',
  '1ST+CONSTITUTION+BANCORP': 'CIK=0001141807',
