@@ -1,6 +1,6 @@
 ### Parse the XML and then put everything into JSON format
 filesIn= '~/sec/allUrls/'
-from bs4 import BeautifulSoup
+
 import pandas as pd
 from collections import Counter
 import os, random, datetime, sys,re 
