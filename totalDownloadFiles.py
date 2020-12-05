@@ -6,7 +6,7 @@ import pandas as pda
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-filesIn= '/Users/krishnaneupane/Documents/personal/academic/disst/gitFiles/sec/allUrls/00000_all_urls/'
+filesIn= '~/sec/allUrls/00000_all_urls/'
 fType= ['13F-HR', '13F-HR/A', '13F-NT', '13F-NT/A', '13FCONP','4','5', '3']
 
 perForm={}
